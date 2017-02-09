@@ -139,8 +139,8 @@ Game2048.prototype._moveRight = function () {
     });
 
     //2. Merge tiles in row that are together and the same number.
-    for (var i = (newRow.length - 1); i >= newRow.length; i -= 1) {
-      if (newRow[i] === newRow[i + 1]) {
+    for (var i = (newRow.length - 1); i >= 0; i -= 1) {
+      if (newRow[i] === newRow[i - 1]) {
         newRow[i] *= 2;
         newRow[i - 1] = null;
 
@@ -224,6 +224,7 @@ Game2048.prototype.move = function (direction) {
 
   if (this.boardHasChanged) {
     this._generateTile();
+    this._isGameLost();
     this.boardHasChanged = false;
   }
 };
@@ -234,6 +235,37 @@ Game2048.prototype._updateScore = function (points) {
   if (points === 2048) {
     this.hasWon = true;
   }
+};
+
+Game2048.prototype._isGameLost = function () {
+  if (this._getAvailablePosition() !== null) {
+    return;
+  }
+
+  var theGame = this;
+
+  this.board.forEach(function (row, rowIndex) {
+    row.forEach(function (cell, colIndex) {
+      var current = that.board[rowIndex][colIndex];
+     var top, bottom, left, right;
+
+     if (that.board[rowIndex][colIndex - 1]) {
+       left  = theGame.board[rowIndex][cellIndex - 1];
+     }
+     if (that.board[rowIndex][colIndex + 1]) {
+       right = theGame.board[rowIndex][cellIndex + 1];
+     }
+     if (that.board[rowIndex - 1]) {
+       top    = theGame.board[rowIndex - 1][coIndex];
+     }
+     if (that.board[rowIndex + 1]) {
+       bottom = theGame.board[rowIndex + 1][colIndex];
+     }
+
+     if (current === top || current === bottom || current === left || current === right)
+       theGame.hasLost = true;
+    });
+  });
 };
 
 Game2048.prototype._updateScore = function (points) {
