@@ -10,6 +10,7 @@ function Game2048 () {
   ];
   this.hasWon = false;
   this.hasLost = false;
+  this.boardHasChanged = false;
 
   this._generateTile();
   this._generateTile();
@@ -66,10 +67,14 @@ Game2048.prototype._renderBoard = function () {
   this.board.forEach(function(row) {
     console.log(row);
   });
+
+  console.log('Current Score: ' + this.score);
 };
 
 Game2048.prototype._moveLeft = function () {
   var updatedBoard = [];
+  var theGame = this;
+
   this.board.forEach(function (row) {
     //1. Remove empties from row
     var newRow = [];
@@ -85,6 +90,8 @@ Game2048.prototype._moveLeft = function () {
       if (newRow[i] === newRow[i + 1]) {
         newRow[i] *= 2;
         newRow[i + 1] = null;
+
+        theGame._updateScore(newRow[i]);
       }
     }
 
@@ -100,9 +107,14 @@ Game2048.prototype._moveLeft = function () {
     });
 
     //4. push nulls until row has length 4 again
+    if (moved.length !== row.length) {
+      theGame.boardHasChanged = true;
+    }
+
     while (moved.length < 4) {
       moved.push(null);
     }
+
 
     updatedBoard.push(moved);
   });
@@ -114,6 +126,8 @@ Game2048.prototype._moveLeft = function () {
 //move right...............................................................
 Game2048.prototype._moveRight = function () {
   var updatedBoard = [];
+  var theGame = this;
+
   this.board.forEach(function (row) {
     //1. Remove empties from row
     var newRow = [];
@@ -129,6 +143,8 @@ Game2048.prototype._moveRight = function () {
       if (newRow[i] === newRow[i + 1]) {
         newRow[i] *= 2;
         newRow[i - 1] = null;
+
+        theGame._updateScore(newRow[i]);
       }
     }
 
@@ -144,9 +160,14 @@ Game2048.prototype._moveRight = function () {
     });
 
     //4. push nulls until row has length 4 again
+    if (moved.length !== row.length) {
+      theGame.boardHasChanged = true;
+    }
+
     while (moved.length < 4) {
       moved.unshift(null);
     }
+
 
     updatedBoard.push(moved);
   });
@@ -178,8 +199,48 @@ Game2048.prototype.moveDown = function () {
   return boardChanged;
 };
 
+Game2048.prototype.move = function (direction) {
+  if (this.hasWon || this.hasLost) {
+    return;
+  }
 
-kristysGame = new Game2048();
-kristysGame._renderBoard();
-kristysGame._moveLeft();
-kristysGame._renderBoard();
+  switch (direction) {
+    case 'up':
+    this.moveUp();
+    break;
+
+    case 'down':
+    this.moveDown();
+    break;
+
+    case 'left':
+    this._moveLeft();
+    break;
+
+    case 'right':
+    this._moveRight();
+    break;
+  }
+
+  if (this.boardHasChanged) {
+    this._generateTile();
+    this.boardHasChanged = false;
+  }
+};
+
+Game2048.prototype._updateScore = function (points) {
+  this.score += points;
+
+  if (points === 2048) {
+    this.hasWon = true;
+  }
+};
+
+Game2048.prototype._updateScore = function (points) {
+  this.score += points;
+};
+
+// kristysGame = new Game2048();
+// kristysGame._renderBoard();
+// kristysGame._moveLeft();
+// kristysGame._renderBoard();
