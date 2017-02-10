@@ -187,19 +187,19 @@ Game2048.prototype._transposeMatrix = function () {
 
 Game2048.prototype.moveUp = function () {
   this._transposeMatrix();
-  var boardChanged = this._moveLeft();
+  this._moveLeft();
   this._transposeMatrix();
-  return boardChanged;
 };
 
 Game2048.prototype.moveDown = function () {
   this._transposeMatrix();
-  var boardChanged = this._moveRight();
+  this._moveRight();
   this._transposeMatrix();
-  return boardChanged;
 };
 
 Game2048.prototype.move = function (direction) {
+  ion.sound.play("pop_cork");
+
   if (this.hasWon || this.hasLost) {
     return;
   }
@@ -230,6 +230,8 @@ Game2048.prototype.move = function (direction) {
 };
 
 Game2048.prototype._updateScore = function (points) {
+  ion.sound.play("branch_break");
+
   this.score += points;
 
   if (points === 2048) {
@@ -246,7 +248,7 @@ Game2048.prototype._isGameLost = function () {
 
   this.board.forEach(function (row, rowIndex) {
     row.forEach(function (cell, colIndex) {
-      var current = that.board[rowIndex][colIndex];
+      var current = theGame.board[rowIndex][colIndex];
      var top, bottom, left, right;
 
      if (that.board[rowIndex][colIndex - 1]) {
@@ -268,9 +270,6 @@ Game2048.prototype._isGameLost = function () {
   });
 };
 
-Game2048.prototype._updateScore = function (points) {
-  this.score += points;
-};
 
 // kristysGame = new Game2048();
 // kristysGame._renderBoard();
